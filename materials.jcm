@@ -1,0 +1,13 @@
+
+Material { 
+  Name = "Air/Vacuum" # Background
+  Id = 3
+  RelPermittivity = 1
+  RelPermeability = 1.0
+}
+Material { 
+  Name = "Al" # Nanostructure Metal
+  Id = 2
+  RelPermittivity = (-4.30928969748685, 0.480161602388934)
+  RelPermeability = 1.0
+}

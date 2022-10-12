@@ -1,0 +1,178 @@
+Layout {  
+  UnitOfLength = 1e-09
+  
+  MeshOptions {
+    MaximumSidelength = 40
+              }
+
+
+ Polygon  {
+    Name = "ComputationalDomain"
+    DomainId = 1
+    Priority = -1
+    Port = Origin
+    RotationAngle = 30 ##JCMwave rotates anti-clockwise, RC2 rotates clockwise
+    PeriodicUnitCell {
+     LatticeAngle = 60
+     LatticeVectorLengths = [175 175]
+     Shape = Hexagonal
+   }  
+  }
+
+
+
+ 
+
+
+  Circle {
+    Name = "Particle"
+    DomainId = 101
+    Radius = 50
+    RefineAll = 4
+    MeshOptions {
+      MaximumSidelength = 20
+    }
+  }
+
+
+
+           
+  Extrusion {
+
+    
+     MeshOptions {
+
+      MaximumSidelengthZ = 25
+
+    } 
+  
+      LayerInterface {
+
+      BoundaryClass = Transparent 
+
+                   }
+
+          
+
+
+
+    Layer {
+      MeshOptions {
+        MaximumSidelengthZUpper = 2
+      }
+      Thickness = 50 #Aluminum Film
+      DomainId = 2
+    }
+    
+
+    LayerInterface {
+
+        GlobalZ = 0.0 ##Set Film Particle Interface as z=0
+
+      }
+
+
+    
+
+    Layer {
+
+    Thickness = 45 ##Au
+
+    DomainIdMapping = [1 3 ##Air
+                      101 2] ##Al Structure
+        
+	MeshOptions {
+        MaximumSidelengthZLower = 2
+        MaximumSidelengthZUpper = 2
+      }
+     }
+
+### Particle z_rounding
+
+
+
+Layer {
+  Thickness = 1
+  DomainIdMapping = [1 3 ##Air
+                     101 2]
+					
+}
+
+LayerInterface {
+  GeometryValues = [Circle{1}/Radius: 49.8989794855664]
+               }
+
+
+
+Layer {
+  Thickness = 1
+  DomainIdMapping = [1 3 ##Air
+                     101 2]
+					
+}
+
+LayerInterface {
+  GeometryValues = [Circle{1}/Radius: 49.5825756949558]
+               }
+
+
+
+Layer {
+  Thickness = 1
+  DomainIdMapping = [1 3 ##Air
+                     101 2]
+					
+}
+
+LayerInterface {
+  GeometryValues = [Circle{1}/Radius: 49]
+               }
+
+
+
+Layer {
+  Thickness = 1
+  DomainIdMapping = [1 3 ##Air
+                     101 2]
+					
+}
+
+LayerInterface {
+  GeometryValues = [Circle{1}/Radius: 48]
+               }
+
+
+
+Layer {
+  Thickness = 1
+  DomainIdMapping = [1 3 ##Air
+                     101 2]
+					
+}
+
+LayerInterface {
+  GeometryValues = [Circle{1}/Radius: 45]
+               }
+
+   
+
+          Layer {
+
+       Thickness = 50
+
+       DomainIdMapping = [1 3] ##Air on top of the metal
+
+    }
+
+   
+
+    LayerInterface {
+
+    BoundaryClass = Transparent 
+
+    }
+
+   
+
+    }
+ }

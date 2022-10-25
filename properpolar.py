@@ -6,28 +6,18 @@ from scipy.signal import savgol_filter
 from scipy import interpolate
 import math
 import scipy
+from polarplot import *
 
 from scipy.linalg import logm, expm
 
 #Define a function to extract the Mueller Matrix data from a .txt file exported from CompleteEase
-def extract_RC2(txt,wmin,wmax,angles):
+def extract_RC2(txt,azimuth):
     
-    #Select wvl's of interest to make data processing faster
+    n = 1
     
-    lamsi = np.loadtxt(txt,skiprows = 1, max_rows=1, usecols = np.arange(1,1042))
-    imin = np.where(lamsi == wmin)
-    imax = np.where(lamsi == wmax)
+    m = azimuth.size
     
-    rangemin = imin[0][0]+1
-    rangemax = imax[0][0]+2
-
-    lams = np.loadtxt(txt,skiprows = 1, max_rows=1, usecols = np.arange(rangemin,rangemax))
-    
-    n = lams.size
-    
-    m = angles.size
-    
-    AOI = np.zeros((m,n)) 
+    azi = np.zeros((m,n)) 
     
     DI = np.zeros((m,n)) 
     
@@ -54,38 +44,34 @@ def extract_RC2(txt,wmin,wmax,angles):
     
     for i in range(m):
         
-        j12 = ((m*21)+ 2) + i; j13 = ((m*23)+ 2) + i; j14 = ((m*25)+ 2) + i
-        j21 = ((m*27)+ 2) + i; j22 = ((m*29)+ 2) + i; j23 = ((m*31)+ 2) + i; j24 = ((m*33)+ 2) + i
-        j31 = ((m*35)+ 2) + i; j32 = ((m*37)+ 2) + i; j33 = ((m*39)+ 2) + i; j34 = ((m*41)+ 2) + i
-        j41 = ((m*43)+ 2) + i; j42 = ((m*45)+ 2) + i; j43 = ((m*47)+ 2) + i; j44 = ((m*49)+ 2) + i
+        azi[i] = azimuth[i]
         
-        AOI [i] = angles[i]
-        MM12[i] = np.loadtxt(txt,skiprows = j12, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM13[i] = np.loadtxt(txt,skiprows = j13, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM14[i] = np.loadtxt(txt,skiprows = j14, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM21[i] = np.loadtxt(txt,skiprows = j21, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM22[i] = np.loadtxt(txt,skiprows = j22, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM23[i] = np.loadtxt(txt,skiprows = j23, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM24[i] = np.loadtxt(txt,skiprows = j24, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM31[i] = np.loadtxt(txt,skiprows = j31, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM32[i] = np.loadtxt(txt,skiprows = j32, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM33[i] = np.loadtxt(txt,skiprows = j33, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM34[i] = np.loadtxt(txt,skiprows = j34, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM41[i] = np.loadtxt(txt,skiprows = j41, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM42[i] = np.loadtxt(txt,skiprows = j42, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM43[i] = np.loadtxt(txt,skiprows = j43, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
-        MM44[i] = np.loadtxt(txt,skiprows = j44, max_rows=1, usecols = np.arange(rangemin+1,rangemax+1))
+        MM12[i] = np.loadtxt(txt, usecols = 7)[i]
+        MM13[i] = np.loadtxt(txt, usecols = 8)[i]
+        MM14[i] = np.loadtxt(txt, usecols = 9)[i]
+        MM21[i] = np.loadtxt(txt, usecols = 10)[i]
+        MM22[i] = np.loadtxt(txt, usecols = 11)[i]
+        MM23[i] = np.loadtxt(txt, usecols = 12)[i]
+        MM24[i] = np.loadtxt(txt, usecols = 13)[i]
+        MM31[i] = np.loadtxt(txt, usecols = 14)[i]
+        MM32[i] = np.loadtxt(txt, usecols = 15)[i]
+        MM33[i] = np.loadtxt(txt, usecols = 16)[i]
+        MM34[i] = np.loadtxt(txt, usecols = 17)[i]
+        MM41[i] = np.loadtxt(txt, usecols = 18)[i]
+        MM42[i] = np.loadtxt(txt, usecols = 19)[i]
+        MM43[i] = np.loadtxt(txt, usecols = 20)[i]
+        MM44[i] = np.loadtxt(txt, usecols = 21)[i]
         DI[i] = np.sqrt(1**2+MM12[i]**2+MM13[i]**2+MM14[i]**2+MM21[i]**2+MM22[i]**2+MM23[i]**2+MM24[i]**2+MM31[i]**2+MM32[i]**2+MM33[i]**2+MM34[i]**2+MM41[i]**2+MM42[i]**2+MM43[i]**2+MM44[i]**2-1**2)/(np.sqrt(3)*1)
-    MM=[lams,MM11,MM12,MM13,MM14,MM21,MM22,MM23,MM24,MM31,MM32,MM33,MM34,MM41,MM42,MM43,MM44,AOI,DI]
+    MM=[[210],MM11,MM12,MM13,MM14,MM21,MM22,MM23,MM24,MM31,MM32,MM33,MM34,MM41,MM42,MM43,MM44,azi,DI]
 
     return MM
 
-def Cloude_Decomposition(MM,angles):
-    [lams,MM11,MM12,MM13,MM14,MM21,MM22,MM23,MM24,MM31,MM32,MM33,MM34,MM41,MM42,MM43,MM44,AOI,DI] = MM
+def Cloude_Decomposition(MM,azimuth):
+    [lams,MM11,MM12,MM13,MM14,MM21,MM22,MM23,MM24,MM31,MM32,MM33,MM34,MM41,MM42,MM43,MM44,azi,DI] = MM
     
-    n = lams.size
+    n = 1
     
-    m = angles.size
+    m = azimuth.size
     
     dMM11 = np.zeros((m,n))
     dMM12 = np.zeros((m,n))
@@ -193,15 +179,15 @@ def Cloude_Decomposition(MM,angles):
 
 
     
-    dMM=[lams,dMM11,dMM12,dMM13,dMM14,dMM21,dMM22,dMM23,dMM24,dMM31,dMM32,dMM33,dMM34,dMM41,dMM42,dMM43,dMM44,e1,e2,e3,e4,AOI]
+    dMM=[lams,dMM11,dMM12,dMM13,dMM14,dMM21,dMM22,dMM23,dMM24,dMM31,dMM32,dMM33,dMM34,dMM41,dMM42,dMM43,dMM44,e1,e2,e3,e4,azi]
     return dMM
 
-def D_MM(MM,dMM,angles):
-    [lams,MM11,MM12,MM13,MM14,MM21,MM22,MM23,MM24,MM31,MM32,MM33,MM34,MM41,MM42,MM43,MM44,AOI,DI] = MM
-    [lams,dMM11,dMM12,dMM13,dMM14,dMM21,dMM22,dMM23,dMM24,dMM31,dMM32,dMM33,dMM34,dMM41,dMM42,dMM43,dMM44,e1,e2,e3,e4,AOI]=dMM
+def D_MM(MM,dMM,azimuth):
+    [lams,MM11,MM12,MM13,MM14,MM21,MM22,MM23,MM24,MM31,MM32,MM33,MM34,MM41,MM42,MM43,MM44,azi,DI] = MM
+    [lams,dMM11,dMM12,dMM13,dMM14,dMM21,dMM22,dMM23,dMM24,dMM31,dMM32,dMM33,dMM34,dMM41,dMM42,dMM43,dMM44,e1,e2,e3,e4,azi]=dMM
     
     n=len(lams)
-    m = angles.size
+    m = azimuth.size
     
     L11 = np.zeros((m,n))
     L12 = np.zeros((m,n))
@@ -251,5 +237,59 @@ def D_MM(MM,dMM,angles):
             L43[j][i] = L[3,2]
             L44[j][i] = L[3,3]
     
-    DMM=[lams,L11,L12,L13,L14,L21,L22,L23,L24,L31,L32,L33,L34,L41,L42,L43,L44,AOI,DI,dMM11,dMM12,dMM13,dMM14,dMM21,dMM22,dMM23,dMM24,dMM31,dMM32,dMM33,dMM34,dMM41,dMM42,dMM43,dMM44]
+    DMM=[lams,L11,L12,L13,L14,L21,L22,L23,L24,L31,L32,L33,L34,L41,L42,L43,L44,azi,DI,dMM11,dMM12,dMM13,dMM14,dMM21,dMM22,dMM23,dMM24,dMM31,dMM32,dMM33,dMM34,dMM41,dMM42,dMM43,dMM44]
     return DMM
+
+def convert(radius, azimuth, results, mm):
+    y = []
+    for i in range(len(radius)):
+        y.append(radius[i])
+    x = []
+    for i in range(len(azimuth)):
+        x.append(azimuth[i])
+
+    X,Y = np.meshgrid(np.radians(x),y)
+
+    n = len(azimuth)
+    m = len(radius)
+    z = np.zeros((m,n))
+    for j in range(len(radius)):
+        for i in range(len(azimuth)): 
+            z[j][i] = results[j][mm][i]
+    z = z/abs(np.amin(z))
+    #z = z/0.1
+
+    return [X, Y, z] 
+
+
+
+if __name__ == "__main__":
+    AOI = np.arange(20,36,1) #angles of incidence
+    azi = np.arange(0,92,2)
+    results = []
+    azimuth = []
+    for i in range(len(AOI)):
+        angle = AOI[i]
+        txt = "results/my_resultsMM_NSL_hexagonal_lattice_radius_37.5_nm_structure_thickness_50_nm_pitch_120_wavelength_2.1e-07nm_" + str(angle) + "AOI.txt"
+        MM = extract_RC2(txt,azi) #load Muelle Matrix Exported from CompleteEase (Woollam)
+        dMM = Cloude_Decomposition(MM,azi)
+        results.append(D_MM(MM,dMM,azi))
+
+    #X, Y, Z, mm
+    #X is azimuth
+    #Y is radius
+    #Z is MM values
+    #mm is name
+    data = []
+    plot_results = [[],[],[],[]]
+    data = convert(AOI, azi, results, 18)
+    for r in range(3):
+        plot_results[r].append(data[r])
+
+    mm_cols = np.arange(20,35,1)
+    for i in range(len(mm_cols)):
+        data = convert(AOI, azi, results, mm_cols[i])
+        for r in range(3):
+            plot_results[r].append(data[r])
+    plot(plot_results[0],plot_results[1],plot_results[2], DECOMP=True)
+

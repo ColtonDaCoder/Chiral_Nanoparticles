@@ -256,7 +256,8 @@ def convert(radius, azimuth, results, mm):
     for j in range(len(radius)):
         for i in range(len(azimuth)): 
             z[j][i] = results[j][mm][i]
-    z = z/abs(np.amin(z))
+    #z = z/abs(np.amax(abs(z)))
+
     #z = z/0.1
 
     return [X, Y, z] 
@@ -292,4 +293,5 @@ if __name__ == "__main__":
         for r in range(3):
             plot_results[r].append(data[r])
     plot(plot_results[0],plot_results[1],plot_results[2], DECOMP=True)
+
 

@@ -28,7 +28,7 @@ def get_results(value, radius_range, txt):
     for j in range(len(radius)):
         for i in range(len(azimuth)): 
             z[j][i] = results[j][i][1]
-    z = z/abs(np.amin(z))
+    #z = z/abs(np.amax(abs(z)))
     return [X, Y, z] 
 
 def plot(X, Y, Z, DECOMP=False):
@@ -37,11 +37,13 @@ def plot(X, Y, Z, DECOMP=False):
     xTicks = [0,np.pi/12,np.pi/6,np.pi/4,np.pi/3,np.pi/2] 
 
     fig, axis = plt.subplots(4,4,figsize=(10,10),subplot_kw=dict(projection='polar'))
-    cm = plt.cm.seismic
+    cm = plt.cm.hot
     for j in range(4):
         for i in range(4):
             val = i*4+j
-            axis[i,j].pcolormesh(X[val],Y[val],Z[val],vmin=-0.8, vmax=0.8, shading='gouraud', antialiased=True, cmap = cm) 
+            Zmin = np.amin(Z[val])
+            Zmax = np.amax(Z[val])
+            cb = axis[i,j].pcolormesh(X[val],Y[val],Z[val],vmin=Zmin, vmax=Zmax, shading='gouraud', antialiased=True, cmap = cm) 
             axis[i,j].set_rticks(rTicks, fontsize=10) #AOI
             axis[i,j].set_xticks(xTicks, fontsize=10)
             axis[i,j].set_rlim(rTicks[0], rTicks[-1])
@@ -50,9 +52,11 @@ def plot(X, Y, Z, DECOMP=False):
             title = str(j+1) + str(i+1)
             if DECOMP and (i == 0 and j == 0):
                 title = "DI"
+            fig.colorbar(cb,ax=axis[i,j],pad=0.2)
+
             axis[i,j].set_title(title,fontsize=20)
-    plt.tight_layout(h_pad=1)
-    #plt.savefig('constant_wvl_210.png')
+    plt.tight_layout(h_pad=1,w_pad=3)
+    plt.savefig('constant_wvl_210.png')
     plt.show()
 
 if __name__ == '__main__':

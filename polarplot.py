@@ -37,7 +37,7 @@ def plot(X, Y, Z, DECOMP=False):
     xTicks = [0,np.pi/12,np.pi/6,np.pi/4,np.pi/3,np.pi/2] 
 
     fig, axis = plt.subplots(4,4,figsize=(10,10),subplot_kw=dict(projection='polar'))
-    cm = plt.cm.hot
+    cm = plt.cm.seismic
     for j in range(4):
         for i in range(4):
             val = i*4+j

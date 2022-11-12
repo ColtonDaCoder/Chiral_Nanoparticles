@@ -45,7 +45,7 @@ def extract_RC2(txt,azimuth):
     for i in range(m):
         
         azi[i] = azimuth[i]
-        
+        MM11[i] = np.loadtxt(txt, usecols = 6)[i]
         MM12[i] = np.loadtxt(txt, usecols = 7)[i]
         MM13[i] = np.loadtxt(txt, usecols = 8)[i]
         MM14[i] = np.loadtxt(txt, usecols = 9)[i]
@@ -61,7 +61,24 @@ def extract_RC2(txt,azimuth):
         MM42[i] = np.loadtxt(txt, usecols = 19)[i]
         MM43[i] = np.loadtxt(txt, usecols = 20)[i]
         MM44[i] = np.loadtxt(txt, usecols = 21)[i]
-        DI[i] = np.sqrt(1**2+MM12[i]**2+MM13[i]**2+MM14[i]**2+MM21[i]**2+MM22[i]**2+MM23[i]**2+MM24[i]**2+MM31[i]**2+MM32[i]**2+MM33[i]**2+MM34[i]**2+MM41[i]**2+MM42[i]**2+MM43[i]**2+MM44[i]**2-1**2)/(np.sqrt(3)*1)
+        MM12[i] = MM12[i]/MM11[i]
+        MM13[i] = MM13[i]/MM11[i]
+        MM14[i] = MM14[i]/MM11[i]
+        MM21[i] = MM21[i]/MM11[i]
+        MM22[i] = MM22[i]/MM11[i]
+        MM23[i] = MM23[i]/MM11[i]
+        MM24[i] = MM24[i]/MM11[i]
+        MM31[i] = MM31[i]/MM11[i]
+        MM32[i] = MM32[i]/MM11[i]
+        MM33[i] = MM33[i]/MM11[i]
+        MM34[i] = MM34[i]/MM11[i]
+        MM41[i] = MM41[i]/MM11[i]
+        MM42[i] = MM42[i]/MM11[i]
+        MM43[i] = MM43[i]/MM11[i]
+        MM44[i] = MM44[i]/MM11[i]
+        MM11[i] = MM11[i]/MM11[i]
+        DI[i] = np.sqrt(MM12[i]**2+MM13[i]**2+MM14[i]**2+MM21[i]**2+MM22[i]**2+MM23[i]**2+MM24[i]**2+MM31[i]**2+MM32[i]**2+MM33[i]**2+MM34[i]**2+MM41[i]**2+MM42[i]**2+MM43[i]**2+MM44[i]**2)/(np.sqrt(3))
+        
     MM=[[210],MM11,MM12,MM13,MM14,MM21,MM22,MM23,MM24,MM31,MM32,MM33,MM34,MM41,MM42,MM43,MM44,azi,DI]
 
     return MM
@@ -154,7 +171,6 @@ def Cloude_Decomposition(MM,azimuth):
             Jconj=np.matrix.conjugate(J)
             M = A@(np.kron(J,Jconj))@Ainv
             M = M.real
-            
             #Normalize dMM
             dMM11[j][i] = M[0,0]/M[0,0]
             dMM12[j][i] = M[0,1]/M[0,0]

@@ -70,5 +70,6 @@ if __name__ == '__main__':
             data = get_results(7+i*4+j,radius_range,txt)
             for r in range(3):
                 results[r].append(data[r])
-    plot(results[0],results[1],results[2])
+    print(results[2])
+    #plot(results[0],results[1],results[2])
 

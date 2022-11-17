@@ -257,6 +257,7 @@ def D_MM(MM,dMM,azimuth):
     return DMM
 
 def convert(radius, azimuth, results, mm):
+    print(azimuth)
     y = []
     for i in range(len(radius)):
         y.append(radius[i])

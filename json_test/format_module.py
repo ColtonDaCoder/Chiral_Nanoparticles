@@ -5,16 +5,19 @@ import copy
 
 class json_file:
 
-    def __init__(self, filename):
+    def __init__(self, filename, is_new=False):
         self.filename = filename
-        self.data = self.get_json(self.filename) 
-        
+        if is_new:
+            self.data = {}
+        else:
+            self.data = self.get_json(self.filename) 
+
     #returns json file of wavelength file
     def get_json(self, filename):
         with open(filename, 'r') as read_file:
             raw = json.load(read_file)
         return raw
-    
+ 
     #if array is not given return entire mueller matrix
     #else return element indexed by array parameter
     def getMM(self, aoi, azi, element=None):
@@ -130,7 +133,25 @@ def tiago_to_json(filename):
                 store[aoi][azi]["mm"] = [raw[j][6:10].tolist(), raw[j][10:14].tolist(), raw[j][14:18].tolist(), raw[j][18:22].tolist()]
     return store
 
-def plot(X, Y, Z, DECOMP=False):
+def convert_to_plot(file):
+    all_data = json_file("json_test/"+file).data
+    y = [int(aoi[0:2]) for aoi in all_data]
+    x = [float(azi) for azi in all_data["20AOI"]]
+    base_x,base_y = np.meshgrid(np.radians(x),y)
+    X = [base_x for i in range(16)]
+    Y = [base_y for i in range(16)] 
+    elements = [11,12,13,14,21,22,23,24,31,32,33,34,41,42,43,44]
+    Z=[[ [] for aoi in all_data ] for e in elements]
+    for i, aoi in enumerate(all_data): 
+        for azi in all_data[aoi]:
+            dMM = all_data[aoi][azi]["dMM"]
+            for index, element in enumerate(elements):
+                sub = str(element)
+                Z[index][i].append(dMM[int(sub[0])-1][int(sub[1])-1])
+    return X,Y,Z
+
+def plot(file, DECOMP=False):
+    X,Y,Z = convert_to_plot(file)
     #X = azimuth (xticks)
     #Y = AOI (rticks)
     #Z = dMM
@@ -162,56 +183,10 @@ def plot(X, Y, Z, DECOMP=False):
     plt.tight_layout(h_pad=1,w_pad=3)
     plt.savefig('constant_wvl_210.png')
     plt.show()
+
 file = "hex_radius_37.5_nm_structure_thickness_50_nm_pitch_120_wavelength_2.1e-07nm.json"
-manager = json_file("json_test/"+file)
-radius = manager.data
-y = []
-for aoi in radius:
-    y.append(int(aoi[0:2]))
-azimuth = manager.data["20AOI"] 
-x = []
-for azi in azimuth:
-    x.append(float(azi))
-X = []
-Y = []
-base_x,base_y = np.meshgrid(np.radians(x),y)
-for i in range(16):
-    X.append(base_x)
-    Y.append(base_y)
-n = len(azimuth)
-m = len(radius)
-z = np.zeros((m,n))
-#for j in range(len(radius)):
-#    for i in range(len(azimuth)): 
-        
-Z=[]
-#for element in range(16)
-#
-#elements = [11,12,13,14,21,22,23,24,31,32,33,34,41,42,43,44]
-#for element in elements:
-#    print(element)
-#    dict = manager.getMM_col(element)
-#    aoi_list = []
-#    for aoi in dict:
-#        azi_list = []
-#        for azi in dict[aoi]:
-#            print(azi)
-#            azi_list.append(dict[aoi][azi]["dMM"])
-#        print(aoi)
-#        aoi_list.append(azi_list)
-#    Z.append(aoi_list)
-
-#save_json("store_y.json",Y)
-Z = json_file("store_y.json").data
-print(len(Z))
-print(len(Z[0]))
-print(len(Z[0][0]))
-plot(X,Y,Z,DECOMP=True)
+plot(file, DECOMP=True)
     
-#X = 
-
-#Z = np.array([i for i in ])
-
 #file = "hex_radius_50_nm_structure_thickness_50_nm_pitch_75_nm_wavelength_2.1e-07nm.json"
 #tiago = "my_resultsother_rotations_MM_NSL_hexagonal_lattice_radius_50_nm_structure_thickness_50_nm_pitch_175_wavelength_2.1e-07nm_"
 #tiago = "my_resultsMM_NSL_hexagonal_lattice_radius_37.5_nm_structure_thickness_50_nm_pitch_120_wavelength_2.1e-07nm_"

@@ -1,0 +1,43 @@
+Problem = {
+  InfoLevel = -1
+  StorageFormat = Binary
+  Electromagnetics {
+    TimeHarmonic {
+      Scattering {
+        FieldComponents = Electric	
+	    Accuracy {
+          FiniteElementDegree = 2
+          Precision = 1e-3
+          Refinement {
+            MaxNumberSteps = 0
+          }
+	}
+	  }
+    }
+  }
+}
+
+# POST PROCESSES
+
+
+PostProcess {
+  FourierTransform {
+    FieldBagPath = "project_results/fieldbag.jcm"
+    OutputFileName = "project_results/fourier_modes_r.jcm"
+    NormalDirection = Z
+    ChiefRay = [-20 0]
+    NumericalAperture = 0.09
+  }
+}
+
+
+
+PostProcess {
+  ScatteringMatrix {
+    Format = JCM-ASCII
+    PolarizationConvention = Hauge-Berkeley
+    InputFileName = "project_results/fourier_modes_r.jcm"
+    OutputFileName = "project_results/sm.jcm"
+  }
+}
+

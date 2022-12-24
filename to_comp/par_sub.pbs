@@ -1,0 +1,20 @@
+#!/bin/bash
+#PBS -l nodes=3:ppn=20
+#PBS -l walltime=4:00:00
+#PBS -A hpc_mcpeak10
+#PBS -q workq
+#PBS -N HCP
+#PBS -j oe
+
+JOBS_PER_NODE=1
+echo "JOBS_PER_NODE="$JOBS_PER_NODE
+
+export WDIR=/work/coltonb/gpar
+cd $WDIR
+NTHREADS=20
+parallel --progress \
+         -j $JOBS_PER_NODE \
+         --slf $PBS_NODEFILE \
+         --workdir $WDIR \
+         $PBS_O_WORKDIR/cmd_dimer.sh $NTHREADS \
+         :::: input.lst

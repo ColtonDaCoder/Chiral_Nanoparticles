@@ -136,7 +136,7 @@ def tiago_to_json(filename):
 def convert_to_plot(file):
     all_data = json_file("json_test/"+file).data
     y = [int(aoi[0:2]) for aoi in all_data]
-    x = [float(azi) for azi in all_data["20"]]
+    x = [float(azi) for azi in all_data["20AOI"]]
     base_x,base_y = np.meshgrid(np.radians(x),y)
     X = [base_x for i in range(16)]
     Y = [base_y for i in range(16)] 
@@ -184,15 +184,13 @@ def plot(file, DECOMP=False):
     plt.savefig('constant_wvl_210.png')
     plt.show()
 
-#file = "hex_radius_37.5_nm_structure_thickness_50_nm_pitch_120_wavelength_2.1e-07nm.json"
-#file = "hex_radius_50_nm_structure_thickness_50_nm_pitch_175_wavelength_2.1e-07nm.json"
-file = "new_radius_37.5_pitch_120_wvl_210.json"
+file = "hex_radius_37.5_nm_structure_thickness_50_nm_pitch_120_wavelength_2.1e-07nm.json"
 plot(file, DECOMP=True)
+    
 #file = "hex_radius_50_nm_structure_thickness_50_nm_pitch_75_nm_wavelength_2.1e-07nm.json"
 #tiago = "my_resultsother_rotations_MM_NSL_hexagonal_lattice_radius_50_nm_structure_thickness_50_nm_pitch_175_wavelength_2.1e-07nm_"
 #tiago = "my_resultsMM_NSL_hexagonal_lattice_radius_37.5_nm_structure_thickness_50_nm_pitch_120_wavelength_2.1e-07nm_"
 #save_json("json_test/" + file, tiago_to_json("results/" + tiago))
-
 
 
 
